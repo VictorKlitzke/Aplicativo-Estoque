@@ -3,23 +3,10 @@ import pool from "../database/index";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv'
+import {User} from "../interface";
+import {logs} from "../middleware/logs";
 
 dotenv.config();
-
-interface User {
-    id: number;
-    nome: string;
-    senha: string
-}
-
-interface Insumos {
-    id: number;
-    nome: string;
-    categoria: string;
-    quantidade: number;
-    estoque_minimo: number;
-    custo_unitario: number;
-}
 
 export const registerInsumos = async (req: Request, res: Response): Promise<void> => {
     // @ts-ignore
@@ -93,6 +80,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                 sameSite: "lax",
                 maxAge: 18000000,
             });
+
+            let UserId = user?.id;
+
+            logs('Usuário logado', "login", UserId);
 
             return res.json({
                 authorization: true,

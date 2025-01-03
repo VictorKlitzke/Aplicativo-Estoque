@@ -1,13 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import jwt, {JwtPayload} from "jsonwebtoken";
 import pool from "../database/index";
-
-
-interface User {
-    id: number;
-    nome: string;
-    senha: string
-}
+import {User} from "../interface";
 
 export const authUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     let token: string | undefined = req.cookies['token'];
