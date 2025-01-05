@@ -8,7 +8,6 @@ const router = express.Router();
 router.post("/login", login);
 router.post("/registerinsumos", authUser, registerInsumos);
 
-
 router.get("/getInsumos", authUser, getInsumos);
 router.get("/getMovimentacoes", authUser, getMovimentacoes);
 

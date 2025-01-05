@@ -15,3 +15,18 @@ class PostServices {
     }
   }
 }
+
+class GetServices {
+  Future<List<Map<String, dynamic>>> getInsumos() async {
+    try {
+      final response = await dio.get('getInsumos');
+      if (response.data != null || response.data['getInsumos'] != null) {
+        return List<Map<String, dynamic>>.from(response.data['getInsumos']);
+      } else {
+        return [];
+      }
+    } catch (error) {
+      return [];
+    }
+  }
+}
