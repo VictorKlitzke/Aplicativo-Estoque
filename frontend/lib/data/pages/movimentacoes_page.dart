@@ -9,7 +9,7 @@ class MovimentacoesPage extends StatefulWidget {
 class _MovimentacoesPage extends State<MovimentacoesPage> {
   final GetServices getServices = GetServices();
   bool isLoading = false;
-  List<Map<String, dynamic>> getInsumos = [];
+  List<Map<String, dynamic>> getInsumo = [];
   String? selectedInsumos;
 
   @override
@@ -27,16 +27,17 @@ class _MovimentacoesPage extends State<MovimentacoesPage> {
       final result = await getServices.getInsumos();
 
       setState(() {
-        getInsumos = result.map((item) {
+        getInsumo = result.map((item) {
           return {
             'id': item['id'] ?? 0,
-            'nome': item['nome'] ?? 'Insumos desconhecido'
+            'nome': item['nome'] ?? 'Insumos desconhecido',
           };
         }).toList();
 
-        if (getInsumos.isNotEmpty && selectedInsumos == null) {
-          selectedInsumos = getInsumos.first['id'].toString();
+        if (getInsumo.isNotEmpty && selectedInsumos == null) {
+          selectedInsumos = getInsumo.first['id'].toString();
         }
+
         isLoading = false;
       });
     } catch (error) {
@@ -67,39 +68,35 @@ class _MovimentacoesPage extends State<MovimentacoesPage> {
               ),
             ),
             const SizedBox(height: 8),
-            isLoading
-                ? Center(child: CircularProgressIndicator())
-                : DropdownSearch<String>(
-                    popupProps: PopupProps.menu(
-                        showSearchBox: true,
-                        searchFieldProps: TextFieldProps(
-                            decoration: InputDecoration(
-                          labelText: 'Pesquisar',
-                          border: OutlineInputBorder(),
-                        ))),
-                    dropdownBuilder: (context, selectedItem) {
-                      return Text(selectedItem ?? 'Selecione um insumo');
-                    },
-                    onChanged: (value) {
-                      setState(() {
-                        var insumoSelecionado = getInsumos.firstWhere(
-                          (item) => item['nome'] == value,
-                          orElse: () => {},
-                        );
-
-                        if (insumoSelecionado.isNotEmpty) {
-                          selectedInsumos = insumoSelecionado['id'].toString();
-                        } else {
-                          selectedInsumos = null;
-                        }
-                        print('Insumo selecionado: $insumoSelecionado');
-                      });
-                    },
-                    selectedItem: selectedInsumos != null
-                        ? getInsumos.firstWhere((item) =>
-                            item['id'].toString() == selectedInsumos)['nome']
-                        : null,
+            DropdownSearch<Map<String, dynamic>>(
+              popupProps: PopupProps.menu(
+                showSearchBox: true,
+                searchFieldProps: TextFieldProps(
+                  decoration: InputDecoration(
+                    labelText: 'Pesquisar',
+                    border: OutlineInputBorder(),
                   ),
+                ),
+              ),
+              itemAsString: (item) => item['nome'] ?? 'Insumo desconhecido',
+              onChanged: (value) {
+                setState(() {
+                  if (value != null) {
+                    selectedInsumos = value['id'].toString();
+                  } else {
+                    selectedInsumos = null;
+                  }
+                });
+              },
+              selectedItem: selectedInsumos != null
+                  ? getInsumo.firstWhere(
+                      (item) => item['id'].toString() == selectedInsumos)
+                  : null,
+              // items: getInsumo.map((item) => item['nome'] as String).toList(),
+              filterFn: (item, filter) {
+                return item['nome'].toLowerCase().contains(filter.toLowerCase());
+              },
+            ),
           ],
         ),
       ),

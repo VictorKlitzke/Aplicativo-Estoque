@@ -1,12 +1,43 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter/cupertino.dart';
-
+import 'package:frontend/data/services/api_services.dart';
 class HomePage extends StatefulWidget {
   @override
   _HomePage createState() => _HomePage();
 }
 
 class _HomePage extends State<HomePage> {
+  final GetServices getServices = GetServices();
+  bool isLoading = false;
+  int estoqueMinimo = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchInsumos();
+  }
+
+  void fetchInsumos() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+
+      final result = await getServices.getInsumos();
+      
+      setState(() {
+        estoqueMinimo = result.where((item) => item['estoque_minimo'] > 0).length;
+      });
+
+      print(' Home $estoqueMinimo');
+
+    } catch (error) {
+      print('Erro ao carregar Insumos $error');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,7 +62,7 @@ class _HomePage extends State<HomePage> {
                 children: [
                   _buildStatCard(
                     title: 'Total de Insumos',
-                    value: '1.245',
+                    value: isLoading ? 'Carregando...' : estoqueMinimo.toString(),
                     icon: Icons.inventory,
                     color: Colors.green,
                   ),
