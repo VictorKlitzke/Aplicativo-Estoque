@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class SideBarComponents extends StatefulWidget {
+  const SideBarComponents({super.key});
+
+  @override
   _SideBarComponents createState() => _SideBarComponents();
 }
 

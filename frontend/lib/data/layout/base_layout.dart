@@ -4,7 +4,7 @@ import 'package:frontend/data/components/sideBar_components.dart';
 class BaseLayout extends StatelessWidget {
   final Widget body;
 
-  const BaseLayout({required this.body, Key? key}) : super(key: key);
+  const BaseLayout({required this.body, super.key});
 
   @override
   Widget build(BuildContext context) {

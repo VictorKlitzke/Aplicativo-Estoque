@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/data/services/api_services.dart';
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePage createState() => _HomePage();
 }
