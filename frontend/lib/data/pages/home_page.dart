@@ -1,55 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/data/services/api_services.dart';
+import 'package:frontend/data/utils/notificationData.dart';
+import 'package:frontend/data/utils/refreshData.dart';
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final NotificationData notificationData;
+
+  const HomePage({super.key, required this.notificationData});
 
   @override
   _HomePage createState() => _HomePage();
 }
 
 class _HomePage extends State<HomePage> {
-  final GetServices getServices = GetServices();
+  final RefreshData _refreshData = new RefreshData();
+
   bool isLoading = false;
   int estoqueMinimo = 0;
+  List<Map<String, dynamic>> itensCriticos = [];
 
   @override
   void initState() {
     super.initState();
-    fetchInsumos();
+    refresh();
+    notification();
   }
-
-  void fetchInsumos() async {
+  Future<void> refresh() async {
     setState(() {
       isLoading = true;
     });
-    try {
-
-      final result = await getServices.getInsumos();
-      
-      setState(() {
-        estoqueMinimo = result.where((item) => item['estoque_minimo'] > 0).length;
-      });
-
-      print(' Home $estoqueMinimo');
-
-    } catch (error) {
-      print('Erro ao carregar Insumos $error');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    final result = await _refreshData.fetchInsumos();
+    setState(() {
+      estoqueMinimo = result;
+      isLoading = false;
+    });
   }
+
+  Future<void> notification() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final result = await widget.notificationData.ListInsumos();
+
+    setState(() {
+      itensCriticos = result!;
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.lightGreen,
+    return Scaffold(
+      backgroundColor: Colors.lightGreen,
+      body: RefreshIndicator(
+        onRefresh: refresh,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: 16),
               const Text(
                 'Resumo do Estoque',
                 style: TextStyle(
@@ -87,27 +97,21 @@ class _HomePage extends State<HomePage> {
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: ListView(
-                  children: [
-                    _buildAlertCard(
-                      message: 'Fertilizante X próximo do limite mínimo.',
-                      date: 'Hoje',
-                    ),
-                    _buildAlertCard(
-                      message: 'Sementes Y em falta.',
-                      date: 'Ontem',
-                    ),
-                    _buildAlertCard(
-                      message: 'Defensivo Z com alta saída neste mês.',
-                      date: 'Há 3 dias',
-                    ),
-                  ],
+                child: ListView.builder(
+                    itemCount: itensCriticos.length,
+                    itemBuilder: (Context, index) {
+                      final insumo = itensCriticos[index];
+                      return _buildAlertCard(
+                          message: '${insumo['nome']} está abaixo do estoque mínimo.',
+                          date: 'Hoje');
+                    }
                 ),
               ),
             ],
           ),
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildStatCard({

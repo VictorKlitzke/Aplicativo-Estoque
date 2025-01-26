@@ -3,7 +3,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 
 final dio = Dio(BaseOptions(
-  baseUrl: 'http://192.168.1.6:3001/api/',
+  baseUrl: 'http://192.168.1.3:3001/api/',
   headers: {
     'Content-Type': 'application/json',
   },
