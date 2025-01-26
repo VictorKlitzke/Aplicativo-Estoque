@@ -16,6 +16,7 @@ dependencies:
   intl: ^0.20.1
   flutter_local_notifications: ^18.0.1
   dropdown_button2: ^2.3.9
+  dropdown_textfield: ^1.2.0
 
 dev_dependencies:
   flutter_test:

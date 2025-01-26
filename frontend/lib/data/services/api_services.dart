@@ -14,6 +14,20 @@ class PostServices {
       return false;
     }
   }
+
+  Future<bool> RegisterMovimentacoes(data) async {
+    try {
+      final response = await dio.post('registermovimentacoes', data: {'data': data});
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
 }
 
 class GetServices {
